@@ -47,14 +47,10 @@ Books = [
     author:"Ug Lee", publisher: "Pretty Prints",
     isbn: "987-6-54-321133-8", avail: false, 
     who: "Dom", due: "1/7/23" }),
-  Books.set(9, { id: "9", title: "Python Manual", 
+  Books.set(10, { id: "10", title: "Python Manual", 
     author:"Mr. Snake", publisher: "Reptiles",
     isbn: "987-6-54-321133-9", avail: false, 
     who: "Grass", due: "1/9/23" }),
-  Books.set(10, { id: "10", title: "Last Book On Earth", 
-    author:"Pug Ers", publisher: "Unknown",
-    isbn: "987-6-54-321177-1", avail: false, 
-    who: "Mike", due: "1/2/93" })
 ] ;
 
 function NotExists(id) {
@@ -86,3 +82,4 @@ function readall(req, res) {
 // }
 
 console.log(Books[1])
+

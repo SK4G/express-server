@@ -15,118 +15,119 @@ app.use(function(req, res, next){
     else next();
     });
 
-var Books = [
-{id: "1", title: "Reactions in REACT", author: "Ben Dover",
-publisher: "Random House", isbn: "978-3-16-148410-0", avail: true},
-{id: "2", title: "Express-sions", author: "Frieda Livery",
- publisher: "Chaotic House", isbn: "978-3-16-148410-2", avail: true},
-{id: "3", title: "Restful REST", author: "Al Gorithm",
- publisher: "ACM", isbn: "978-3-16-143310-1", avail: true},
-{id: "4", title: "See Essess", author: "Anna Log",
- publisher: "O'Reilly", isbn: "987-6-54-148220-1", avail: false, who: "Homer", due: "1/1/23"},
-{id: "5", title: "Scripting in JS", author: "Dee Gital",
- publisher: "IEEE", isbn: "987-6-54-321123-1", avail: false, who: "Marge", due: "1/2/23"},
-{id: "6", title: "Be An HTML Hero", author: "Jen Neric",
- publisher: "Coders-R-Us", isbn: "987-6-54-321123-2", avail: false, who: "Lisa", due: "1/3/23"}
-]
+var books = [
+  { id: "1", title: "Reactions in REACT", 
+    author:"Ben Dover", publisher: "Random House",
+    isbn: "978-3-16-148410-0", avail: true },
+  { id: "2", title: "Express-sions", 
+    author:"Frieda Livery", publisher: "Chaotic House",
+    isbn: "978-3-16-148410-2", avail: true },
+  { id: "3", title: "RESTful Rest", 
+    author:"Al Gorithm",  publisher: "ACM Publishers",
+    isbn: "978-3-16-143310-1", avail: true },
+  { id: "4", title: "See Es Es", 
+    author:"Anna Log", publisher: "O'Reilly",
+    isbn: "987-6-54-148220-1", avail: false, 
+    who: "Homer", due:"1/1/23"},
+  { id: "5", title: "Scripting in Javascript", 
+    author:"Dee Gital", publisher: "IEEE",
+    isbn: "987-6-54-324423-1", avail: false, 
+    who: "Marge", due: "1/2/23"},
+  { id: "6", title: "HTML Heros", 
+    author:"Jen Neric", publisher: "self",
+    isbn: "987-6-54-325523-2", avail: false, 
+    who: "Lisa", due: "1/3/23"},
+  { id: "7", title: "Pugging in pug", 
+    author:"Pug Ers", publisher: "PPP",
+    isbn: "987-6-54-321133-5", avail: false, 
+    who: "P Master", due: "1/4/23"},
+  { id: "8", title: "Logout", 
+    author:"CTRL ALT Delete", publisher: "PPP",
+    isbn: "987-6-54-321133-6", avail: false, 
+    who: "nobody", due: "1/5/23"},
+  { id: "9", title: "Styling in CSS", 
+    author:"Ug Lee", publisher: "Pretty Prints",
+    isbn: "987-6-54-321133-8", avail: false, 
+    who: "Dom", due: "1/7/23"},
+  { id: "10", title: "Python Manual", 
+    author:"Mr. Snake", publisher: "Reptiles",
+    isbn: "987-6-54-321133-9", avail: false, 
+    who: "Grass", due: "1/9/23"},
+] ;
 
-function keyReduce(arr) { return arr.map(({id, title}) => ({id, title})); }
+function listbooks(arr) { return arr.map(({id, title}) => ({id, title})); }
 
-// returns a list of all books (title & id) regardless of checkout status (i.e. 
-// both available and checked-out books should be included)
-// app.get('/books', (req, res) => {
-//     allBooks = Books.map(({id, title}) => ({id, title}))
-//     res.status(200).send(JSON.stringify(allBooks));
-// });
+function NotExists(id, res) {
+  if (books.has(id)) return false;
+  res.status(404).send(`${id} not found\n`);
+  return true;
+}
 
-// returns list of all books (title & id) which are available or not available to be checked out 
-app.get('/books', (req, res) => {
-    if((req.query.avail == undefined)) return res.status(200).send(JSON.stringify(keyReduce(Books)));
+function findone(res, id) {
+  if (NotExists(id,res)) return res.status(404).send('Book not found');
+  return res.status(200).send(JSON.stringify(books.get[id]));
+}
 
-    if (req.query.avail === "true" ){
-        let booksAvail = Books.filter(b => Books.avail === true);
-        return res.status(200).send(JSON.stringify(keyReduce(booksAvail)));
-    }
+function readall(req, res) {
+  if((req.query.avail == undefined)) return res.status(200).send(JSON.stringify(listbooks(books)));
+  res.json(books);
+}
 
-    if (req.query.avail === "false" ){
-        let booksNotAvail = Books.filter(b => Books.avail === false);
-        return res.status(200).send(JSON.stringify(keyReduce(booksNotAvail)));
-    }
-    return res.status(200).send(JSON.stringify(keyReduce(Books)));
-});
+function createone(res, id, obj) {
+  if (books.has(id)) {
+    return res.status(403).send('already exists');
+  }
+  else {
+    books.set(id, obj);
+    return res.status(201).send('created');
+  }
+}
 
-// returns all details for the book matching id, 404 if not found
+function deleteone(res, id) {
+  if (NotExists(id, res)) return res.status(204).send('no content');
+  books.delete(id);
+  return res.status(200);
+}
+
+function updateone(res, id, obj) {
+  if (NotExists(id, res)) return res.status(404).send('not found');
+  original = books.get(id);
+  for (var key in obj)
+    original[key] = obj[key];
+  return res.status(200).send('ok');
+}
+
 app.get('/books/:id', (req, res) => {
     const id = req.params.id;
     idx = parseInt(id) -1;
-    for (let book of Books) {
+    for (let book of books) {
         if (book.id === id) {
             // res.json(book);
-            return res.status(200).send(JSON.stringify(Books[idx]));
+            return res.status(200).send(JSON.stringify(books[idx]));
         }
     }
     res.status(404).send('Book not found');
 });
 
-// Add a new book as described in request body (JSON), which includes id 
-// & status
-app.post('/book', (req, res) => {
-    const id = req.params.id;
-    idx = parseInt(id) -1;
-    for (let book of Books) {
-        if (book.id === id) {
-            // res.json(book);
-            Books[idx]['title'] = req.body.id['title'];
-            Books[idx]['author'] = req.body.id['author'];
-            Books[idx]['publisher'] = req.body.id['publisher'];
-            Books[idx]['avail'] = req.body.id['avail'];
-            Books[idx]['who'] = req.body.id['who'];
-            Books[idx]['due'] = req.body.id['due'];
-            return res.status(201).send('created');
-        }
-    }
+// returns list of all books (title & id) which are available or not available to be checked out 
+app.get('/books', (req, res) => {
+  if((req.query.avail == undefined)) return res.status(200).send(JSON.stringify(listbooks(books)));
 
-    res.status(403).send('already exists');
-});
+  if (req.query.avail === "true" ){
+      let booksAvail = books.filter(b => books.avail === true);
+      return res.status(200).send(JSON.stringify(listbooks(booksAvail)));
+  }
 
+  if (req.query.avail === "false" ){
+      let booksNotAvail = books.filter(b => books.avail === false);
+      return res.status(200).send(JSON.stringify(listbooks(booksNotAvail)));
+  }
+  return res.status(200).send(JSON.stringify(listbooks(books)));
+}); 
 
-// For book matching id, update any properties present in request body 
-// (JSON). Can be used to check in or out. 
-app.put('/books/:id', (req, res) => {
-    const id = req.params.id;
-    idx = parseInt(id) -1;
-    for (let book of Books) {
-        if (book.id === id) {
-            // res.json(book);
-            Books[idx]['title'] = req.body.id['title'];
-            Books[idx]['author'] = req.body.id['author'];
-            Books[idx]['publisher'] = req.body.id['publisher'];
-            Books[idx]['avail'] = req.body.id['avail'];
-            Books[idx]['who'] = req.body.id['who'];
-            Books[idx]['due'] = req.body.id['due'];
-            return res.status(200).send('ok');
-        }
-    }
-    
-    res.status(404).send('not found');
-});
+app.put('/books/:id', (req,res) => { updateone(res, req.params.id, req.body);});
+app.delete('/books/:id', (req,res) => { deleteone(res, req.params.id);});
+app.post('/books', (req,res) => { createone(res, req.params.id, req.body)});
 
-// Delete the book matching id (if it exists) regardless of checkout status
-app.delete('/books/:id', (req, res) => {
-    // Remove item from the books array
-    const id = req.params.id;
-    idx = parseInt(id) -1;
-    for (let book of Books) {
-        if (book.id === id) {
-            // res.json(book);
-            delete Books[idx]
-            console.log(Books)
-            return res.status(200).send(JSON.stringify(Books[idx]));
-        }
-    }
-
-    res.status(204).send('no content');
-});
-  
 
 app.listen(port, () => console.log('app listening on port ${port}!'))
