@@ -25,7 +25,7 @@ git pull
 
 workdir=$(pwd)
 echo "getting latest .bashrc"
-wget https://raw.githubusercontent.com/arcolinux/arcolinux-root/master/etc/skel/.bashrc-latest -O $workdir/archiso/airootfs/etc/skel/.bashrc
+wget https://raw.githubusercontent.com/arcolinux/arcolinux-root/main/etc/skel/.bashrc-latest -O $workdir/archiso/airootfs/etc/skel/.bashrc
 
 
 # Below command will backup everything inside the project folder
@@ -44,7 +44,7 @@ git commit -m "$input"
 
 # Push the local files to github
 
-git push -u origin master
+git push -u origin main
 
 
 echo "################################################################"
