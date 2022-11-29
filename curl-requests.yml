@@ -1,0 +1,10 @@
+curl -X POST -H "Content-Type:application/json" http://localhost:3000/books -d '{id: "1", title: "ddddd", author: "ddder",
+publisher: "Rddde", isbn: "978-3-16-148410-0", avail: true}'
+
+curl -X PUT -H "Content-Type:application/json" http://localhost:3000/books -d '{id: "1", title: "ddddd", author: "ddder",
+publisher: "Rddde", isbn: "978-3-16-148410-0", avail: true},'
+
+
+curl -X DELETE http://localhost:3000/books/1
+
+curl http://localhost:3000/books/1

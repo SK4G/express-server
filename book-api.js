@@ -39,20 +39,8 @@ function keyReduce(arr) { return arr.map(({id, title}) => ({id, title})); }
 //     res.status(200).send(JSON.stringify(allBooks));
 // });
 
-// returns all details for the book matching id, 404 if not found
-app.get('/books/:id', (req, res) => {
-    const id = req.params.id;
-    for (let book of Books) {
-        if (book.id === id) {
-            // res.json(book);
-            return res.status(200).send(JSON.stringify(Books[id]));
-        }
-    }
-    res.status(404).send('Book not found');
-});
-
 // returns list of all books (title & id) which are available or not available to be checked out 
-app.get('/books:id', (req, res) => {
+app.get('/books', (req, res) => {
     if((req.query.avail == undefined)) return res.status(200).send(JSON.stringify(keyReduce(Books)));
 
     if (req.query.avail === "true" ){
@@ -67,14 +55,33 @@ app.get('/books:id', (req, res) => {
     return res.status(200).send(JSON.stringify(keyReduce(Books)));
 });
 
-// Add a new book as described in request body (JSON), which includes id 
-// & status
-app.post('/book', (req, res) => {
-    const id = req.body.id;
+// returns all details for the book matching id, 404 if not found
+app.get('/books/:id', (req, res) => {
+    const id = req.params.id;
+    idx = parseInt(id) -1;
     for (let book of Books) {
         if (book.id === id) {
             // res.json(book);
-            Books.push(book);
+            return res.status(200).send(JSON.stringify(Books[idx]));
+        }
+    }
+    res.status(404).send('Book not found');
+});
+
+// Add a new book as described in request body (JSON), which includes id 
+// & status
+app.post('/book', (req, res) => {
+    const id = req.params.id;
+    idx = parseInt(id) -1;
+    for (let book of Books) {
+        if (book.id === id) {
+            // res.json(book);
+            Books[idx]['title'] = req.body.id['title'];
+            Books[idx]['author'] = req.body.id['author'];
+            Books[idx]['publisher'] = req.body.id['publisher'];
+            Books[idx]['avail'] = req.body.id['avail'];
+            Books[idx]['who'] = req.body.id['who'];
+            Books[idx]['due'] = req.body.id['due'];
             return res.status(201).send('created');
         }
     }
@@ -85,12 +92,18 @@ app.post('/book', (req, res) => {
 
 // For book matching id, update any properties present in request body 
 // (JSON). Can be used to check in or out. 
-app.put('/books/id', (req, res) => {
-    const id = req.body.id;
+app.put('/books/:id', (req, res) => {
+    const id = req.params.id;
+    idx = parseInt(id) -1;
     for (let book of Books) {
         if (book.id === id) {
             // res.json(book);
-            Books.push(book);
+            Books[idx]['title'] = req.body.id['title'];
+            Books[idx]['author'] = req.body.id['author'];
+            Books[idx]['publisher'] = req.body.id['publisher'];
+            Books[idx]['avail'] = req.body.id['avail'];
+            Books[idx]['who'] = req.body.id['who'];
+            Books[idx]['due'] = req.body.id['due'];
             return res.status(200).send('ok');
         }
     }
@@ -99,18 +112,20 @@ app.put('/books/id', (req, res) => {
 });
 
 // Delete the book matching id (if it exists) regardless of checkout status
-app.delete('/books/id', (req, res) => {
-  // Remove item from the books array
-  const id = req.body.id;
-  for (let book of Books) {
-      if (book.id === id) {
-          // res.json(book);
-          Books.delete(book);
-          return res.status(200).send('ok');
-      }
-  }
+app.delete('/books/:id', (req, res) => {
+    // Remove item from the books array
+    const id = req.params.id;
+    idx = parseInt(id) -1;
+    for (let book of Books) {
+        if (book.id === id) {
+            // res.json(book);
+            delete Books[idx]
+            console.log(Books)
+            return res.status(200).send(JSON.stringify(Books[idx]));
+        }
+    }
 
-  res.status(204).send('no content');
+    res.status(204).send('no content');
 });
   
 
